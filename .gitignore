@@ -99,3 +99,7 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+config.py
+config.py.production
+.eu_nvr_last_toot
