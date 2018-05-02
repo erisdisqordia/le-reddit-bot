@@ -65,9 +65,9 @@ def poll_toot(mastodon, last_post):
                                 f'https://redd.it/{child_data["id"]}',
                                 media_ids=[media['id']], sensitive=True)
 
-    log.info(f'sent! new id is: {toot["id"]}')
+    log.info(f'sent! toot id: {toot["id"]}, post id: {child_id!r}')
 
-    return _do_res(toot['id'])
+    return _do_res(child_id)
 
 
 def main():
@@ -82,13 +82,19 @@ def main():
     # and load the last timestamp the app was running at
     try:
         fd = open(config.BOT_STATE, 'r')
-        next_tstamp, current_tstamp = map(float, fd.read().split(','))
+        data = fd.read.split(',')
+
+        # unpack
+        next_tstamp, current_tstamp = map(float, data[:2])
+        last_post = data[2]
+
         fd.close()
     except FileNotFoundError:
         next_tstamp, current_tstamp, last_post = None, None, None
 
     while True:
-        log.debug(f'next: {next_tstamp}, current: {current_tstamp}')
+        log.debug(f'next: {next_tstamp}, current: '
+                  f'{current_tstamp}, last post: {last_post}')
 
         # first time running OR .eu_nvr_last_toot is lost
         if current_tstamp is None:
@@ -102,8 +108,8 @@ def main():
             current_tstamp, next_tstamp, last_post = poll_toot(mastodon, last_post)
 
         # after doing those, update the file!
-        with open(config.BOT_STATE, 'w') as f:
-            f.write(f'{next_tstamp},{current_tstamp},{last_post}')
+        with open(config.BOT_STATE, 'w') as statefile:
+            statefile.write(f'{next_tstamp},{current_tstamp},{last_post}')
 
         # wait a second before checking those again!
         time.sleep(1)
