@@ -19,10 +19,12 @@ def _do_res(last_post):
 
 def poll_toot(mastodon, last_post):
     log.info('calling reddit...')
+
     resp = requests.get(config.REDDIT_URL, headers={
+        # reddit blocks me when I have a requests useragent
+        # lol.
         'User-Agent': 'eunvr/0.1'
     })
-    log.info(repr(resp))
 
     if resp.status_code != 200:
         log.error(f'Status code is not 200: {resp.status}')
@@ -38,7 +40,6 @@ def poll_toot(mastodon, last_post):
         return _do_res(last_post)
 
     data = data['data']
-    children = data['children']
 
     child = data['children'][0]
     child_data = child['data']
@@ -93,9 +94,6 @@ def main():
         next_tstamp, current_tstamp, last_post = None, None, None
 
     while True:
-        log.debug(f'next: {next_tstamp}, current: '
-                  f'{current_tstamp}, last post: {last_post}')
-
         # first time running OR .eu_nvr_last_toot is lost
         if current_tstamp is None:
             # poll right now, then schedule the next one
