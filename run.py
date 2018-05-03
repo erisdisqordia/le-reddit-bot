@@ -18,6 +18,7 @@ def _do_res(last_post):
 
 
 def poll_toot(mastodon, last_post):
+    """Query reddit and toot if possible."""
     log.info('calling reddit...')
 
     resp = requests.get(config.REDDIT_URL, headers={
@@ -83,7 +84,7 @@ def main():
     # and load the last timestamp the app was running at
     try:
         fd = open(config.BOT_STATE, 'r')
-        data = fd.read.split(',')
+        data = fd.read().split(',')
 
         # unpack
         next_tstamp, current_tstamp = map(float, data[:2])
@@ -108,6 +109,9 @@ def main():
         # after doing those, update the file!
         with open(config.BOT_STATE, 'w') as statefile:
             statefile.write(f'{next_tstamp},{current_tstamp},{last_post}')
+
+        if current_tstamp % 100 == 0:
+            log.info(f'{next_tstamp - current_tstamp}seconds before poll time!')
 
         # wait a second before checking those again!
         time.sleep(1)
