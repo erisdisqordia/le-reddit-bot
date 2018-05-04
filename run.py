@@ -110,8 +110,10 @@ def main():
         with open(config.BOT_STATE, 'w') as statefile:
             statefile.write(f'{next_tstamp},{current_tstamp},{last_post}')
 
-        if current_tstamp % 100 == 0:
-            log.info(f'{next_tstamp - current_tstamp}seconds before poll time!')
+        if int(current_tstamp) % 100 == 0:
+            remaining = next_tstamp - current_tstamp
+            remaining = round(remaining, 5)
+            log.info(f'{remaining}seconds before poll time!')
 
         # wait a second before checking those again!
         time.sleep(1)
