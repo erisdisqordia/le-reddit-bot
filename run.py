@@ -93,7 +93,7 @@ def main():
 
         fd.close()
     except FileNotFoundError:
-        next_tstamp, current_tstamp, last_posts = None, None, None
+        next_tstamp, current_tstamp, last_posts = None, None, []
 
     while True:
         # first time running OR .eu_nvr_last_toot is lost
