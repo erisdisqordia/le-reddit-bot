@@ -12,12 +12,12 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-def _do_res(last_post):
+def _do_res(last_posts):
     cur_t = time.time()
-    return cur_t, cur_t + config.TOOT_PERIOD, last_post
+    return cur_t, cur_t + config.TOOT_PERIOD, last_posts
 
 
-def poll_toot(mastodon, last_post):
+def poll_toot(mastodon, last_posts: list):
     """Query reddit and toot if possible."""
     log.info('calling reddit...')
 
@@ -30,7 +30,7 @@ def poll_toot(mastodon, last_post):
     if resp.status_code != 200:
         log.error(f'Status code is not 200: {resp.status}')
         log.error(resp)
-        return _do_res(last_post)
+        return _do_res(last_posts)
 
     try:
         log.info('requesting json...')
@@ -38,7 +38,7 @@ def poll_toot(mastodon, last_post):
         assert isinstance(data, dict)
     except:
         log.exception('Failed to parse json.')
-        return _do_res(last_post)
+        return _do_res(last_posts)
 
     data = data['data']
 
@@ -46,11 +46,11 @@ def poll_toot(mastodon, last_post):
     child_data = child['data']
     child_id = child_data['id']
 
-    log.info(f'id to post: {child_id}, last id: {last_post}')
+    log.info(f'id to post: {child_id}, last ids: {last_posts}')
 
-    if child_id == last_post:
+    if child_id in last_posts:
         log.warning('last posted == current child, ignoring')
-        return _do_res(last_post)
+        return _do_res(last_posts)
 
     # this has the image
     child_url = child_data['url']
@@ -69,7 +69,8 @@ def poll_toot(mastodon, last_post):
 
     log.info(f'sent! toot id: {toot["id"]}, post id: {child_id!r}')
 
-    return _do_res(child_id)
+    last_posts.append(child_id)
+    return _do_res(last_posts)
 
 
 def main():
@@ -88,27 +89,27 @@ def main():
 
         # unpack
         next_tstamp, current_tstamp = map(float, data[:2])
-        last_post = data[2]
+        last_posts = data[2:]
 
         fd.close()
     except FileNotFoundError:
-        next_tstamp, current_tstamp, last_post = None, None, None
+        next_tstamp, current_tstamp, last_posts = None, None, None
 
     while True:
         # first time running OR .eu_nvr_last_toot is lost
         if current_tstamp is None:
             # poll right now, then schedule the next one
-            current_tstamp, next_tstamp, last_post = poll_toot(mastodon, last_post)
+            current_tstamp, next_tstamp, last_posts = poll_toot(mastodon, last_posts)
 
         current_tstamp = time.time()
 
         # we have current_tstamp, good, is it beyond next_tstamp?
         if current_tstamp > next_tstamp:
-            current_tstamp, next_tstamp, last_post = poll_toot(mastodon, last_post)
+            current_tstamp, next_tstamp, last_posts = poll_toot(mastodon, last_posts)
 
         # after doing those, update the file!
         with open(config.BOT_STATE, 'w') as statefile:
-            statefile.write(f'{next_tstamp},{current_tstamp},{last_post}')
+            statefile.write(f'{next_tstamp},{current_tstamp},{",".join(last_posts)}')
 
         if int(current_tstamp) % 100 == 0:
             remaining = next_tstamp - current_tstamp
