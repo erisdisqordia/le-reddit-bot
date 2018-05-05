@@ -17,6 +17,17 @@ def _do_res(last_posts):
     return cur_t, cur_t + config.TOOT_PERIOD, last_posts
 
 
+def is_image(child):
+    child_data = child['data']
+    child_url = child_data['url']
+    return child_url.endswith(('.jpg', '.jpeg', '.png', '.gif'))
+
+def not_posted(child, last_posts):
+    child_data = child['data']
+    child_id = child['id']
+    return child_id not in last_posts
+
+
 def poll_toot(mastodon, last_posts: list):
     """Query reddit and toot if possible."""
     log.info('calling reddit...')
@@ -42,7 +53,15 @@ def poll_toot(mastodon, last_posts: list):
 
     data = data['data']
 
-    child = data['children'][0]
+    useful_children = (child for child in data['children']
+                       if is_image(child) and not_posted(child, last_posts))
+
+    try:
+        child = next(useful_children)
+    except StopIteration:
+        log.error('no useful children found')
+        return _do_res(last_posts)
+
     child_data = child['data']
     child_id = child_data['id']
 
