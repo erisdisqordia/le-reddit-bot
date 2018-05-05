@@ -24,7 +24,7 @@ def is_image(child):
 
 def not_posted(child, last_posts):
     child_data = child['data']
-    child_id = child['id']
+    child_id = child_data['id']
     return child_id not in last_posts
 
 
