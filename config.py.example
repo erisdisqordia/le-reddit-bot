@@ -1,16 +1,18 @@
 # base url of the mastodon instance
 API_BASE_URL = 'https://masto.donte.com.br'
 
+# Which subreddit to look on?
 REDDIT_URL = 'https://www.reddit.com/r/eu_nvr/new.json'
 
-# credentials and all
+# credentials for the Mastodon instance
 CLIENT_ID = '123456'
 CLIENT_SECRET = '123456'
 ACCESS_TOKEN = '123456'
 
-# how many seconds to wait until
-# toot time? (in seconds)
+# How many seconds to wait until polling Reddit
+# and toot-ing if a new post is found
 TOOT_PERIOD = 3600
 
-# file to save bot state
+# Bot state file
+# Recently posted reddit post IDs will be in that file
 BOT_STATE = '.eu_nvr_last_toot'
