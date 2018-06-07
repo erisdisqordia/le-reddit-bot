@@ -1,7 +1,7 @@
 import logging
 import time
-import requests
 import mimetypes
+import sqlite3
 
 import requests
 from mastodon import Mastodon
@@ -12,23 +12,73 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
 
-def _do_res(last_posts):
+TSTAMP_CUR = 0
+TSTAMP_NEXT = 1
+
+
+def _update_timestamp(cur, ttype, tstamp):
+    cur.execute('delete from timestamps where ttype=?', (ttype,))
+    cur.execute('insert into timestamps (ttype, timestamp) values (?, ?)', (ttype, tstamp))
+
+
+def _do_res(conn):
+    cur = conn.cursor()
     cur_t = time.time()
-    return cur_t, cur_t + config.TOOT_PERIOD, last_posts
+
+    # update timestamps for current and next
+    _update_timestamp(cur, TSTAMP_CUR, cur_t)
+    _update_timestamp(cur, TSTAMP_NEXT, cur_t + config.TOOT_PERIOD)
+
+    # i really dont like data loss you see
+    # another type of loss i like: | || || |_
+    conn.commit()
 
 
-def is_image(child):
+def _fetch_tstamp(conn, ttype) -> int:
+    cur = conn.cursor()
+    cur.execute('select timestamp from timestamps where ttype=?', (ttype,))
+    return cur.fetchone()
+
+def fetch_next_timestamp(conn) -> int:
+    """Fetch the next timestamp to check for posts."""
+    try:
+        return _fetch_tstamp(conn, TSTAMP_NEXT)[0]
+    except TypeError:
+        return None
+
+def fetch_cur_tstamp(conn) -> int:
+    """Fetch the current timestamp, if any."""
+    try:
+        return _fetch_tstamp(conn, TSTAMP_CUR)[0]
+    except TypeError:
+        return None
+
+
+def fetch_last_posts(conn) -> list:
+    """Fetch tooted posts from db"""
+    cur = conn.cursor()
+    cur.execute('select postid from posts')
+    return cur.fetchall()
+
+
+def is_image(child) -> bool:
+    """Check if a post object has an image attached."""
     child_data = child['data']
     child_url = child_data['url']
     return child_url.endswith(('.jpg', '.jpeg', '.png', '.gif'))
 
-def not_posted(child, last_posts):
+
+def not_posted(child, conn) -> bool:
+    """Check if a post has been already tooted."""
     child_data = child['data']
     child_id = child_data['id']
+
+    last_posts = fetch_last_posts(conn)
+
     return child_id not in last_posts
 
 
-def poll_toot(mastodon, last_posts: list):
+def poll_toot(mastodon, conn):
     """Query reddit and toot if possible."""
     log.info('calling reddit...')
 
@@ -41,26 +91,30 @@ def poll_toot(mastodon, last_posts: list):
     if resp.status_code != 200:
         log.error(f'Status code is not 200: {resp.status}')
         log.error(resp)
-        return _do_res(last_posts)
+        _do_res(conn)
+        return
 
     try:
         log.info('requesting json...')
         data = resp.json()
         assert isinstance(data, dict)
-    except:
+    except Exception:
         log.exception('Failed to parse json.')
-        return _do_res(last_posts)
+        _do_res(conn)
+        return
 
     data = data['data']
 
+    last_posts = fetch_last_posts(conn)
     useful_children = (child for child in data['children']
-                       if is_image(child) and not_posted(child, last_posts))
+                       if is_image(child) and not_posted(child, conn))
 
     try:
         child = next(useful_children)
     except StopIteration:
         log.error('no useful children found')
-        return _do_res(last_posts)
+        _do_res(conn)
+        return
 
     child_data = child['data']
     child_id = child_data['id']
@@ -69,7 +123,8 @@ def poll_toot(mastodon, last_posts: list):
 
     if child_id in last_posts:
         log.warning('last posted == current child, ignoring')
-        return _do_res(last_posts)
+        _do_res(conn)
+        return
 
     # this has the image
     child_url = child_data['url']
@@ -88,8 +143,10 @@ def poll_toot(mastodon, last_posts: list):
 
     log.info(f'sent! toot id: {toot["id"]}, post id: {child_id!r}')
 
-    last_posts.append(child_id)
-    return _do_res(last_posts)
+    conn.execute('insert into posts (postid) values (?)', (child_id,))
+    conn.commit()
+
+    _do_res(conn)
 
 
 def main():
@@ -100,42 +157,43 @@ def main():
         api_base_url=config.API_BASE_URL,
     )
 
-    # load the next timestamp to send a toot
-    # and load the last timestamp the app was running at
-    try:
-        fd = open(config.BOT_STATE, 'r')
-        data = fd.read().split(',')
+    db = sqlite3.connect(config.BOT_STATE)
+    db.executescript("""
+    create table if not exists posts (
+        postid text not null
+    );
 
-        # unpack
-        next_tstamp, current_tstamp = map(float, data[:2])
-        last_posts = data[2:]
-
-        fd.close()
-    except FileNotFoundError:
-        next_tstamp, current_tstamp, last_posts = None, None, []
+    create table if not exists timestamps (
+        ttype int,
+        timestamp bigint
+    );
+    """)
 
     while True:
+        current_tstamp = fetch_cur_tstamp(db)
+
         # first time running OR .eu_nvr_last_toot is lost
-        if current_tstamp is None:
-            # poll right now, then schedule the next one
-            current_tstamp, next_tstamp, last_posts = poll_toot(mastodon, last_posts)
+        if not current_tstamp:
+            poll_toot(mastodon, db)
 
         current_tstamp = time.time()
+        next_tstamp = fetch_next_timestamp(db)
 
-        # we have current_tstamp, good, is it beyond next_tstamp?
+        # is the current time beyond the time where we should do a check?
         if current_tstamp > next_tstamp:
-            current_tstamp, next_tstamp, last_posts = poll_toot(mastodon, last_posts)
+            poll_toot(mastodon, db)
 
-        # after doing those, update the file!
-        with open(config.BOT_STATE, 'w') as statefile:
-            statefile.write(f'{next_tstamp},{current_tstamp},{",".join(last_posts)}')
+        # commit etc
+        db.commit()
+
+        next_tstamp = fetch_next_timestamp(db)
 
         if int(current_tstamp) % 100 == 0:
             remaining = next_tstamp - current_tstamp
             remaining = round(remaining, 5)
-            log.info(f'{remaining}seconds before poll time!')
+            log.info(f'{remaining} seconds before poll time')
 
-        # wait a second before checking those again!
+        # wait a second before doing it all again
         time.sleep(1)
 
 
