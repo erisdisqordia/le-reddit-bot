@@ -58,7 +58,8 @@ def fetch_last_posts(conn) -> list:
     """Fetch tooted posts from db"""
     cur = conn.cursor()
     cur.execute('select postid from posts')
-    return cur.fetchall()
+    last_posts = cur.fetchall()
+    return [e[0] for e in last_posts]
 
 
 def is_image(child) -> bool:
