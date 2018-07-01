@@ -16,3 +16,11 @@ TOOT_PERIOD = 3600
 # Bot state file
 # Recently posted reddit post IDs will be in that file
 BOT_STATE = 'eu_nvr.db'
+
+# Set content warnings based on the reddit's post title.
+CONTENT_WARNINGS = {
+    'mentions death': ['die', 'death', 'suicide', 'sui'],
+
+    # catch all
+    # 'some post': [''],
+}

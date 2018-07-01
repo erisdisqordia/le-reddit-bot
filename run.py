@@ -39,12 +39,14 @@ def _fetch_tstamp(conn, ttype) -> int:
     cur.execute('select timestamp from timestamps where ttype=?', (ttype,))
     return cur.fetchone()
 
+
 def fetch_next_timestamp(conn) -> int:
     """Fetch the next timestamp to check for posts."""
     try:
         return _fetch_tstamp(conn, TSTAMP_NEXT)[0]
     except TypeError:
         return None
+
 
 def fetch_cur_tstamp(conn) -> int:
     """Fetch the current timestamp, if any."""
@@ -79,6 +81,33 @@ def not_posted(child, conn) -> bool:
     return child_id not in last_posts
 
 
+def is_nsfw(child) -> bool:
+    """return if a post is set to over 18 (NSFW)."""
+    data = child['data']
+    return data.get('over_18', False)
+
+
+def gen_cw_text(child_data: dict) -> bool:
+    """Generate a content warning text for the post
+    based on the flair or title of the post."""
+    try:
+        return child_data['link_flair_text']
+    except KeyError:
+        pass
+
+    # match configurable content warnings
+    # with the post's title
+    for cw_title, keywords in config.CONTENT_WARNINGS.values():
+        title = child_data['title']
+
+        # search for any match
+        if any(word in title for word in keywords):
+            return cw_title
+
+    # by default, if no matches happen, no CW applies.
+    # can be set to a default CW by using an empty keyword
+
+
 def poll_toot(mastodon, conn):
     """Query reddit and toot if possible."""
     log.info('calling reddit...')
@@ -107,8 +136,11 @@ def poll_toot(mastodon, conn):
     data = data['data']
 
     last_posts = fetch_last_posts(conn)
+
+    # find all posts that have images, weren't tooted and aren't nsfw.
     useful_children = (child for child in data['children']
-                       if is_image(child) and not_posted(child, conn))
+                       if is_image(child) and not_posted(child, conn) and
+                       not is_nsfw(child))
 
     try:
         child = next(useful_children)
@@ -127,20 +159,20 @@ def poll_toot(mastodon, conn):
         _do_res(conn)
         return
 
-    # this has the image
     child_url = child_data['url']
     image = requests.get(child_url)
 
-    # upload image
+    # upload image since we can't pass the URL
     mimetype, _encoding = mimetypes.guess_type(child_url)
     log.info(f'sending image (mimetype: {mimetype})...')
-
     media = mastodon.media_post(image.content, mimetype)
 
     log.info('sending toot...')
+    cw_text = gen_cw_text(child_data)
     toot = mastodon.status_post(f'{child_data["title"]} '
                                 f'https://redd.it/{child_data["id"]}',
-                                media_ids=[media['id']], sensitive=True)
+                                media_ids=[media['id']], sensitive=True,
+                                spoiler_text=cw_text)
 
     log.info(f'sent! toot id: {toot["id"]}, post id: {child_id!r}')
 
