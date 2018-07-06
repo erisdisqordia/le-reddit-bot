@@ -90,10 +90,10 @@ def is_nsfw(child) -> bool:
 def gen_cw_text(child_data: dict) -> bool:
     """Generate a content warning text for the post
     based on the flair or title of the post."""
-    try:
-        return child_data['link_flair_text']
-    except KeyError:
-        pass
+    flair = child_data.get('link_flair_text')
+
+    if flair in config.ACCEPTED_FLAIRS:
+        return flair
 
     # match configurable content warnings
     # with the post's title
