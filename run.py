@@ -97,7 +97,7 @@ def gen_cw_text(child_data: dict) -> bool:
 
     # match configurable content warnings
     # with the post's title
-    for cw_title, keywords in config.CONTENT_WARNINGS.values():
+    for cw_title, keywords in config.CONTENT_WARNINGS.items():
         title = child_data['title']
 
         # search for any match
