@@ -18,6 +18,8 @@ TOOT_PERIOD = 3600
 BOT_STATE = 'eu_nvr.db'
 
 # Accept some flairs as content warnings
+# ACCEPTED_FLAIRS is set to r/traa's flairs, feel free to replace
+# them by the subreddit
 ACCEPTED_FLAIRS = ['vent', 'dysphoria', 'kink', 'Support']
 
 # Set content warnings based on the reddit's post title.

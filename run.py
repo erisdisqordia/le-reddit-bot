@@ -18,7 +18,8 @@ TSTAMP_NEXT = 1
 
 def _update_timestamp(cur, ttype, tstamp):
     cur.execute('delete from timestamps where ttype=?', (ttype,))
-    cur.execute('insert into timestamps (ttype, timestamp) values (?, ?)', (ttype, tstamp))
+    cur.execute('insert into timestamps (ttype, timestamp) values (?, ?)',
+                (ttype, tstamp))
 
 
 def _do_res(conn):
