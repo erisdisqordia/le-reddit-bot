@@ -168,7 +168,7 @@ def poll_toot(mastodon, conn):
     log.info(f'sending image (mimetype: {mimetype})...')
     try:
         media = mastodon.media_post(image.content, mimetype)
-    except mastodon.Mastodon.MastodonAPIError:
+    except mastodon.MastodonAPIError:
         log.exception('error while sending image, ignoring')
 
         # since media failed to upload, its best we ignore
