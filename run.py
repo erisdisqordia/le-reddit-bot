@@ -4,7 +4,7 @@ import mimetypes
 import sqlite3
 
 import requests
-from mastodon import Mastodon
+from mastodon import Mastodon, MastodonAPIError
 
 import config
 
@@ -168,7 +168,7 @@ def poll_toot(mastodon, conn):
     log.info(f'sending image (mimetype: {mimetype})...')
     try:
         media = mastodon.media_post(image.content, mimetype)
-    except mastodon.MastodonAPIError:
+    except MastodonAPIError:
         log.exception('error while sending image, ignoring')
 
         # since media failed to upload, its best we ignore
