@@ -166,7 +166,18 @@ def poll_toot(mastodon, conn):
     # upload image since we can't pass the URL
     mimetype, _encoding = mimetypes.guess_type(child_url)
     log.info(f'sending image (mimetype: {mimetype})...')
-    media = mastodon.media_post(image.content, mimetype)
+    try:
+        media = mastodon.media_post(image.content, mimetype)
+    except mastodon.MastodonAPIError:
+        log.exception('error while sending image, ignoring')
+
+        # since media failed to upload, its best we ignore
+        # the post altogether by inserting it into db
+        conn.execute('insert into posts (postid) values (?)', (child_id,))
+        conn.commit()
+
+        _do_res(conn)
+
 
     log.info('sending toot...')
     cw_text = gen_cw_text(child_data)
