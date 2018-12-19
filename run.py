@@ -177,6 +177,7 @@ def poll_toot(mastodon, conn):
         conn.commit()
 
         _do_res(conn)
+        return
 
 
     log.info('sending toot...')
