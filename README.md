@@ -1,7 +1,6 @@
 # le-reddit-bot
 
-Naming came off the project originally being foreunvr`.
-
+Bot that checks for new images on a subreddit and posts to a fedi account
 
 ## Installation
 
