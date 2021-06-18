@@ -40,10 +40,12 @@ cp config.py.example config.py
 python3 run.py
 ```
 
-## Starting with your server startup
+## Starting with a systemd service (optionaL)
 
-- I provided a systemd service file. Copy reddit-bot.service.example to reddit-bot.service and modify it as needed   
-- Then move to /etc/systemd/system/  
-- Reload systemd with `sudo systemctl daemon-reload`   
+- I provided a systemd service file named `reddit-bot.service.example`
+- Copy the file: `cp reddit-bot.service.example reddit-bot.service`
+- Modify file as needed (ie your home directory, your user, etc)  
+- Move to the systemd folder: `sudo mv reddit-bot.service /etc/systemd/system/reddit-bot.service`
+- Reload systemd services: `sudo systemctl daemon-reload`   
 - Enable the service `sudo systemctl enable reddit-bot && sudo systemctl start reddit-bot`   
 - If you change your config and want to reload the service: `sudo systemctl restart reddit-bot`
