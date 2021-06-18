@@ -7,30 +7,43 @@ CLIENT_SECRET = 'your_client_secret'
 ACCESS_TOKEN = 'your_access_token'
 
 # Which subreddit to check for posts?
-SUBREDDIT = 'Megaten'
+# Example, for images from r/Megaten: SUBREDDIT = 'Megaten'
+SUBREDDIT = 'Megaten' 
 
 # Which subreddit sort to check under? Accepts: new / top / hot / rising
 SUBREDDIT_SORT = 'new'
 
-# How many seconds to wait until checking Reddit for new posts
+# How many seconds to wait until checking Reddit for new posts, default 10 minutes (600 seconds)
 TOOT_PERIOD = 600
 
-# Bot state file
+# Name of database file, will create if it doesnt exist
 # Recently posted reddit post IDs will be in that file
-BOT_STATE = 'megaten.db'
+BOT_STATE = 'posts.db'
 
 # Accept some flairs as content warnings
 ACCEPTED_FLAIRS = [ "example1", "example2"]
 
 # Set content warnings based on the reddit's post title.
 CONTENT_WARNINGS = {
-#    'mentions death': ['die', 'death', 'suicide', 'sui'],
+    'CW: eris mention': ['eris', 'boderis', 'bananananaboberis'],
 }
 # Mastodon's API accepts: public, unlisted, private, direct
 VISIBILITY = "unlisted"
 
 # Post title of the Reddit post with the Mastodon status? 
+# Options: true (always post full title with credit), no_credit (shot title without "by ___"), false
 TITLES_ENABLED = 'true'
 
 # Do you want images marked NSFW on Reddit to also be marked sensitive on fedi?
+# Options: true (match reddit nsfw tag), always (always mark nsfw on fedi), or false (never mark nsfw)
 MARK_NSFW = 'true'
+
+# Do you want to include the link to the original post on reddit? true / false 
+LINK_ENABLED = 'true'
+
+# Do you want to replace reddit source links with an alternate URL?
+# Otherwise, will default to redd.it
+# If you want increased privacy, some examples: teddit.net, libredd.it
+# You can also refer to the classic reddit interface: old.reddit.com
+ALT_URL_ENABLED = 'false'
+ALT_URL = 'teddit.net'

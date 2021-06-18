@@ -124,7 +124,6 @@ def poll_toot(mastodon, conn, retry_count=0):
     try:
         resp = requests.get(
             subreddit_url,
-            # "https://reddit.com/{subreddit_name},
             headers={
                 # reddit blocks me when I have a requests useragent
                 # lol.
@@ -207,28 +206,44 @@ def poll_toot(mastodon, conn, retry_count=0):
         return
 
     log.info("Posting on the Fediverse...")
+
     cw_text = gen_cw_text(child_data)
     reddit_title = child_data["title"]
+    toot_visibility = config.VISIBILITY
+
     if config.TITLES_ENABLED == "true":
+        toot_text = reddit_title
+    elif config.TITLES_ENABLED == "no_credit":
         toot_text = reddit_title.split("by ",1)
         toot_text = "".join(toot_text)
     else:
         toot_text = ""
-    # toot_text = reddit_title.split("by ", 1)
-    toot_visibility = config.VISIBILITY
+
     if config.MARK_NSFW == "true":
         toot_sensitivity = is_nsfw(child)
+    elif config.MARK_NSFW == "always":
+        toot_sensitivity = True
     else:
         toot_sensitivity = False
-    # toot_sensitivity = config.MARK_ALL_SENSITIVE
+
+    if config.LINK_ENABLED == "true":
+       if config.ALT_URL_ENABLED == "true":
+           alternate_url = config.ALT_URL
+           source_url = " https://" + alternate_url + "/r/" + subreddit_name + "/" + child_id
+       else:
+           source_url = " https://redd.it" + "/" + child_id
+    else:
+           source_url = ""
+
     toot = mastodon.status_post(
-        f'{toot_text}',
+        status=toot_text + source_url,
         media_ids=[media["id"]],
+        spoiler_text=cw_text,
         sensitive=toot_sensitivity,
         visibility=toot_visibility
     )
 
-    log.info(f'Success!\n\n{config.API_BASE_URL}/notice/{toot["id"]}\n{toot_text}\n')
+    log.info(f'Success!\n\nTitle: {toot_text}\nURL: {config.API_BASE_URL}/notice/{toot["id"]}\n')
 
     conn.execute("insert into posts (postid) values (?)", (child_id,))
     conn.commit()
@@ -282,13 +297,6 @@ def main():
             remaining = math.trunc(remaining)
             remaining = format_timespan(remaining)
             log.info(f"Remaining time until next check: {remaining}")
-            # if remaining > 60:
-              # remaining = remaining/60
-              # remaining = round(remaining, 1)
-              # log.info(f"Checking for new images in {remaining} minutes...")
-            # else:
-              # remaining = round(remaining, 0)
-              # log.info(f"Checking for new images in {remaining} seconds...")
 
         # wait a second before doing it all again
         time.sleep(1)
