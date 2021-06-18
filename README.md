@@ -1,6 +1,6 @@
 # le-reddit-bot
 
-Bot that checks for new images on a subreddit and posts to a fedi account
+Bot that checks for new images on a subreddit (i.e. reddit.com/r/Megaten) and posts to an account on the Fediverse (Mastodon, Pleroma, etc)
 
 Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with many new options and rewrites to make it customizable
 
