@@ -42,7 +42,7 @@ python3 run.py
 
 ## Starting with your server startup
 
-I provided a systemd service file. Copy le-reddit.service.example to le-reddit.service and modify it as needed   
-Then move to /etc/systemd/system/  
-Reload systemd with `sudo systemctl daemon-reload`   
-Enable the service `sudo systemctl enable reddit-bot && sudo systemctl start reddit-bot`   
+- I provided a systemd service file. Copy reddit-bot.service.example to reddit-bot.service and modify it as needed   
+- Then move to /etc/systemd/system/  
+- Reload systemd with `sudo systemctl daemon-reload`   
+- Enable the service `sudo systemctl enable reddit-bot && sudo systemctl start reddit-bot`   
