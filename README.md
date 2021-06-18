@@ -46,3 +46,4 @@ python3 run.py
 - Then move to /etc/systemd/system/  
 - Reload systemd with `sudo systemctl daemon-reload`   
 - Enable the service `sudo systemctl enable reddit-bot && sudo systemctl start reddit-bot`   
+- If you change your config and want to reload the service: `sudo systemctl restart reddit-bot`
