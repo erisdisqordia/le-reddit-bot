@@ -35,7 +35,6 @@ cp config.py.example config.py
 ```
 
 ## Running
-
 ```
 python3 run.py
 ```
@@ -43,7 +42,8 @@ python3 run.py
 ## Starting with a systemd service (optional)
 
 - I provided a systemd service file named `reddit-bot.service.example`
-- Copy the file: `cp reddit-bot.service.example reddit-bot.service`
+- Make sure systemd can execute the script: `chmod u+x run.py`  
+- Copy the service file: `cp reddit-bot.service.example reddit-bot.service`
 - Modify file as needed (ie your home directory, your user, etc)  
 - Move to the systemd folder: `sudo mv reddit-bot.service /etc/systemd/system/reddit-bot.service`
 - Reload systemd services: `sudo systemctl daemon-reload`   
