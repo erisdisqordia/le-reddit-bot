@@ -4,7 +4,7 @@ Bot that checks for new images on a subreddit and posts to a fedi account
 
 Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with many new options and rewrites to make it customizable
 
-Differences include:
+### Differences include:
 - Status visibility option (previously only posted publicly)
 - NSFW post marking configuration
   - Options to match reddit's NSFW tag, always mark NSFW on fedi, or never mark NSFW
