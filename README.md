@@ -40,7 +40,7 @@ cp config.py.example config.py
 python3 run.py
 ```
 
-## Starting with a systemd service (optionaL)
+## Starting with a systemd service (optional)
 
 - I provided a systemd service file named `reddit-bot.service.example`
 - Copy the file: `cp reddit-bot.service.example reddit-bot.service`
