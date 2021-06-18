@@ -233,7 +233,7 @@ def poll_toot(mastodon, conn, retry_count=0):
            if url_type == "full":
                source_url = " https://" + alternate_url + "/r/" + subreddit_name + "/" + child_id
            elif url_type == "short":
-               source_url = " https://" + alternate_url "/" + child_id
+               source_url = " https://" + alternate_url + "/" + child_id
            else:
                source_url = " https://redd.it" + "/" + child_id
        else:
