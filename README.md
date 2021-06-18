@@ -2,6 +2,18 @@
 
 Bot that checks for new images on a subreddit and posts to a fedi account
 
+Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with many new options and rewrites to make it customizable
+
+Differences include:
+- Status visibility option (previously only posted publicly)
+- NSFW post marking configuration
+  - Options to match reddit's NSFW tag, always mark NSFW on fedi, or never mark NSFW
+- Ability to search posts from `New`, `Top` or `Hot` or `Rising` etc, instead of only `New`
+- Option to include or disable adding the post title as status text
+- Option to include or disable credit to the original submitter
+- Option to include or disable the source URL
+- Option to replace URL links with an alternative such as libreddit or teddit for privacy
+
 ## Installation
 
 Requirements:
@@ -33,4 +45,4 @@ python3 run.py
 I provided a systemd service file. Copy le-reddit.service.example to le-reddit.service and modify it as needed   
 Then move to /etc/systemd/system/  
 Reload systemd with `sudo systemctl daemon-reload`   
-Enable the service `sudo systemctl enable le-reddit && sudo systemctl start le-reddit`   
+Enable the service `sudo systemctl enable reddit-bot && sudo systemctl start reddit-bot`   
