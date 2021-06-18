@@ -1,0 +1,20 @@
+[Unit]
+Description=Crossposter from a subreddit to fedi
+
+[Service]
+Type=simple
+ExecStart=/location/to/bot/run.py
+KillMode=process
+Restart=on-failure
+
+; Name of the user that runs the Pleroma service.
+User=eris
+
+; Make sure that all paths fit your installation.
+; Path to the home directory of the user running the Pleroma service
+Environment="HOME=/home/eris/"
+; Path to the folder containing the Pleroma installation.
+WorkingDirectory=/location/to/botfolder/
+
+[Install]
+WantedBy=multi-user.target
