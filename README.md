@@ -1,8 +1,6 @@
-# eunvrbot
+# le-reddit-bot
 
-A bot that mirrors the latest posts from any subreddit to Mastodon.
-
-Naming came off the project originally being for `r/eu_nvr`.
+Naming came off the project originally being foreunvr`.
 
 
 ## Installation
@@ -11,25 +9,29 @@ Requirements:
  - Python 3.6.5+
 
 ```
-git clone https://gitlab.com/lnmds/eunvrbot name_of_yr_botte
-cd name_of_yr_botte
+git clone https://github.com/erisdisqordia/le-reddit-bot
+cd le-reddit-bot
 
-# some libraries require wheel
-pip3 install wheel
-pip3 install -Ur requirements.txt
+# install dependencies
+pip3 install wheel Mastodon.py humanfriendly
 
 cp config.py.example config.py
 
 # edit config.py as you want
 # CLIENT_ID, CLIENT_SECRET and ACCESS_TOKEN
 # are acquired by creating an application tied to the bots' account
+# create one here: https://tinysubversions.com/notes/mastodon-bot/
 ```
 
 ## Running
 
 ```
 python3 run.py
-
-# or under pm2
-pm2 start --name name_of_yr_botte run.py --interpreter python3
 ```
+
+## Starting with your server startup
+
+I provided a systemd service file. Copy le-reddit.service.example to le-reddit.service and modify it as needed   
+Then move to /etc/systemd/system/  
+Reload systemd with `sudo systemctl daemon-reload`   
+Enable the service `sudo systemctl enable le-reddit && sudo systemctl start le-reddit`   
