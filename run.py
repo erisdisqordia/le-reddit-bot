@@ -1,7 +1,11 @@
+#!/usr/bin/env python3
 import logging
 import time
 import mimetypes
 import sqlite3
+import math
+
+from humanfriendly import format_timespan
 
 import requests
 from mastodon import Mastodon, MastodonAPIError
@@ -112,11 +116,15 @@ def gen_cw_text(child_data: dict) -> bool:
 
 def poll_toot(mastodon, conn, retry_count=0):
     """Query reddit and toot if possible."""
-    log.info("calling reddit...")
+    # log.info("Checking for new posts...")
+    subreddit_name = config.SUBREDDIT
+    sort = config.SUBREDDIT_SORT
+    subreddit_url = "https://www.reddit.com/r/" + subreddit_name + "/" + sort + ".json"
 
     try:
         resp = requests.get(
-            config.REDDIT_URL,
+            subreddit_url,
+            # "https://reddit.com/{subreddit_name},
             headers={
                 # reddit blocks me when I have a requests useragent
                 # lol.
@@ -143,7 +151,7 @@ def poll_toot(mastodon, conn, retry_count=0):
         return
 
     try:
-        log.info("requesting json...")
+        log.info("Checking for new posts in r/" + subreddit_name + "/" + sort + "/...")
         data = resp.json()
         assert isinstance(data, dict)
     except Exception:
@@ -155,17 +163,17 @@ def poll_toot(mastodon, conn, retry_count=0):
 
     last_posts = fetch_last_posts(conn)
 
-    # find all posts that have images, weren't tooted and aren't nsfw.
+    # find all posts that have images and weren't tooted
     useful_children = (
         child
         for child in data["children"]
-        if is_image(child) and not_posted(child, conn) and not is_nsfw(child)
+        if is_image(child) and not_posted(child, conn)
     )
 
     try:
         child = next(useful_children)
     except StopIteration:
-        log.error("no useful children found")
+        log.error("No new posts found. Waiting to retry...")
         _do_res(conn)
         return
 
@@ -198,16 +206,29 @@ def poll_toot(mastodon, conn, retry_count=0):
         _do_res(conn)
         return
 
-    log.info("sending toot...")
+    log.info("Posting on the Fediverse...")
     cw_text = gen_cw_text(child_data)
+    reddit_title = child_data["title"]
+    if config.TITLES_ENABLED == "true":
+        toot_text = reddit_title.split("by ",1)
+        toot_text = "".join(toot_text)
+    else:
+        toot_text = ""
+    # toot_text = reddit_title.split("by ", 1)
+    toot_visibility = config.VISIBILITY
+    if config.MARK_NSFW == "true":
+        toot_sensitivity = is_nsfw(child)
+    else:
+        toot_sensitivity = False
+    # toot_sensitivity = config.MARK_ALL_SENSITIVE
     toot = mastodon.status_post(
-        f'{child_data["title"]} ' f'https://redd.it/{child_data["id"]}',
+        f'{toot_text}',
         media_ids=[media["id"]],
-        sensitive=True,
-        spoiler_text=cw_text,
+        sensitive=toot_sensitivity,
+        visibility=toot_visibility
     )
 
-    log.info(f'sent! toot id: {toot["id"]}, post id: {child_id!r}')
+    log.info(f'Success!\n\n{config.API_BASE_URL}/notice/{toot["id"]}\n{toot_text}\n')
 
     conn.execute("insert into posts (postid) values (?)", (child_id,))
     conn.commit()
@@ -220,7 +241,7 @@ def main():
         client_id=config.CLIENT_ID,
         client_secret=config.CLIENT_SECRET,
         access_token=config.ACCESS_TOKEN,
-        api_base_url=config.API_BASE_URL,
+        api_base_url=config.API_BASE_URL
     )
 
     db = sqlite3.connect(config.BOT_STATE)
@@ -258,8 +279,16 @@ def main():
 
         if int(current_tstamp) % 100 == 0:
             remaining = next_tstamp - current_tstamp
-            remaining = round(remaining, 5)
-            log.info(f"{remaining} seconds before poll time")
+            remaining = math.trunc(remaining)
+            remaining = format_timespan(remaining)
+            log.info(f"Remaining time until next check: {remaining}")
+            # if remaining > 60:
+              # remaining = remaining/60
+              # remaining = round(remaining, 1)
+              # log.info(f"Checking for new images in {remaining} minutes...")
+            # else:
+              # remaining = round(remaining, 0)
+              # log.info(f"Checking for new images in {remaining} seconds...")
 
         # wait a second before doing it all again
         time.sleep(1)

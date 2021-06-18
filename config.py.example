@@ -1,31 +1,36 @@
-# base url of the mastodon instance
-API_BASE_URL = 'https://masto.donte.com.br'
+# base url of the fedi instance
+API_BASE_URL = 'https://your_instance.space'
 
-# Which subreddit to look on?
-REDDIT_URL = 'https://www.reddit.com/r/eu_nvr/new.json'
+# app credentials for your fedi account
+CLIENT_ID = 'your_client_id'
+CLIENT_SECRET = 'your_client_secret'
+ACCESS_TOKEN = 'your_access_token'
 
-# credentials for the Mastodon instance
-CLIENT_ID = '123456'
-CLIENT_SECRET = '123456'
-ACCESS_TOKEN = '123456'
+# Which subreddit to check for posts?
+SUBREDDIT = 'Megaten'
 
-# How many seconds to wait until polling Reddit
-# and toot-ing if a new post is found
-TOOT_PERIOD = 3600
+# Which subreddit sort to check under? Accepts: new / top / hot / rising
+SUBREDDIT_SORT = 'new'
+
+# How many seconds to wait until checking Reddit for new posts
+TOOT_PERIOD = 600
 
 # Bot state file
 # Recently posted reddit post IDs will be in that file
-BOT_STATE = 'eu_nvr.db'
+BOT_STATE = 'megaten.db'
 
 # Accept some flairs as content warnings
-# ACCEPTED_FLAIRS is set to r/traa's flairs, feel free to replace
-# them by the subreddit
-ACCEPTED_FLAIRS = ['vent', 'dysphoria', 'kink', 'Support']
+ACCEPTED_FLAIRS = [ "example1", "example2"]
 
 # Set content warnings based on the reddit's post title.
 CONTENT_WARNINGS = {
-    'mentions death': ['die', 'death', 'suicide', 'sui'],
-
-    # catch all
-    # 'some post': [''],
+#    'mentions death': ['die', 'death', 'suicide', 'sui'],
 }
+# Mastodon's API accepts: public, unlisted, private, direct
+VISIBILITY = "unlisted"
+
+# Post title of the Reddit post with the Mastodon status? 
+TITLES_ENABLED = 'true'
+
+# Do you want images marked NSFW on Reddit to also be marked sensitive on fedi?
+MARK_NSFW = 'true'
