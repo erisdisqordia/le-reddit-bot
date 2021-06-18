@@ -45,5 +45,11 @@ LINK_ENABLED = 'true'
 # Otherwise, will default to redd.it
 # If you want increased privacy, some examples: teddit.net, libredd.it
 # You can also refer to the classic reddit interface: old.reddit.com
+# Requires LINK_ENABLED = 'true'
 ALT_URL_ENABLED = 'false'
-ALT_URL = 'teddit.net'
+ALT_URL = 'libredd.it'
+
+# Allows you to set if we're using a full URL or a short one
+# full = https://alt_domain/r/Subreddit/postID (teddit.net requires this)
+# short = https://alt_domain/postID (works with libredd.it, redd.it, etc)
+ALT_URL_TYPE = 'short'
