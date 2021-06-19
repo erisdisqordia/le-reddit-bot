@@ -125,9 +125,7 @@ def poll_toot(mastodon, conn, retry_count=0):
         resp = requests.get(
             subreddit_url,
             headers={
-                # reddit blocks me when I have a requests useragent
-                # lol.
-                "User-Agent": "eunvr/0.1"
+                "User-Agent": "python:erisdisqordia.fedi-reddit-bot:v1.0.0"
             },
         )
     except:
