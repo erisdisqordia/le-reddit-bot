@@ -28,11 +28,15 @@ ACCEPTED_FLAIRS = [ "example1", "example2"]
 CONTENT_WARNINGS = {
     'CW: eris mention': ['eris', 'boderis', 'bananananaboberis'],
 }
+
 # Mastodon's API accepts: public, unlisted, private, direct
 VISIBILITY = "unlisted"
 
 # Post title of the Reddit post with the Mastodon status? 
 TITLES_ENABLED = 'true'
+
+# Do you want text inserted at the start of the fedi post?
+TEXT_PREFIX = "Crossposted from le Reddit: "
 
 # Do you want images marked NSFW on Reddit to also be marked sensitive on fedi?
 # Options: true (match reddit nsfw tag), always (always mark nsfw on fedi), or false (never mark nsfw)

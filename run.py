@@ -209,7 +209,8 @@ def poll_toot(mastodon, conn, retry_count=0):
     cw_text = gen_cw_text(child_data)
     reddit_title = child_data["title"]
     toot_visibility = config.VISIBILITY
-    prefix_text = config.LINK_PREFIX
+    link_prefix = config.LINK_PREFIX
+    text_prefix = config.TEXT_PREFIX
 
     if config.TITLES_ENABLED == "true":
         toot_text = reddit_title
@@ -233,18 +234,18 @@ def poll_toot(mastodon, conn, retry_count=0):
            alternate_url = config.ALT_URL
            url_type = config.ALT_URL_TYPE
            if url_type == "full":
-               source_url = prefix_text + "https://" + alternate_url + "/r/" + subreddit_name + "/" + child_id
+               source_url = link_prefix + "https://" + alternate_url + "/r/" + subreddit_name + "/" + child_id
            elif url_type == "short":
-               source_url = prefix_text + "https://" + alternate_url + "/" + child_id
+               source_url = link_prefix + "https://" + alternate_url + "/" + child_id
            else:
-               source_url = prefix_text + "https://redd.it" + "/" + child_id
+               source_url = link_prefix + "https://redd.it" + "/" + child_id
        else:
-           source_url = prefix_text + "https://redd.it" + "/" + child_id
+           source_url = link_prefix + "https://redd.it" + "/" + child_id
     else:
            source_url = ""
 
     toot = mastodon.status_post(
-        status=toot_text + author_name + source_url,
+        status=text_prefix + toot_text + author_name + source_url,
         media_ids=[media["id"]],
         spoiler_text=cw_text,
         sensitive=toot_sensitivity,
