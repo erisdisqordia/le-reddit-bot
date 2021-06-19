@@ -7,6 +7,7 @@ import math
 
 from humanfriendly import format_timespan
 from xml.sax import saxutils as su
+from datetime import datetime, timedelta
 
 import requests
 from mastodon import Mastodon, MastodonAPIError
@@ -245,12 +246,20 @@ def poll_toot(mastodon, conn, retry_count=0):
     else:
            source_url = ""
 
+    if config.SCHEDULE_POSTS == "true":
+        delay = config.SCHEDULE_DELAY
+        scheduled_time = datetime.now() + timedelta(delay)
+        scheduled_time = scheduled_time
+    else:
+        scheduled_time = None
+
     toot = mastodon.status_post(
         status=text_prefix + toot_text + author_name + source_url,
         media_ids=[media["id"]],
         spoiler_text=cw_text,
         sensitive=toot_sensitivity,
-        visibility=toot_visibility
+        visibility=toot_visibility,
+        scheduled_at=scheduled_time
     )
 
     log.info(f'Success!\n\nTitle: {toot_text}\nURL: {config.API_BASE_URL}/notice/{toot["id"]}\n')

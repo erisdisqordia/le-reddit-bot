@@ -66,3 +66,14 @@ ALT_URL = 'libredd.it'
 # full = https://alt_domain/r/Subreddit/postID (teddit.net requires this)
 # short = https://alt_domain/postID (works with libredd.it, redd.it, etc)
 ALT_URL_TYPE = 'short'
+
+# Should we schedule the post instead of immediately post?
+# You can view your scheduled post queue in Mastodon, masto-fe, or clients like Tusky/Husky, and then review, change, post, etc.
+# This means you can set for some future time (ie a year) and then review the posts and curate your own schedule queue
+# This gives you some level of quality control to handpick posts made by your bot
+SCHEDULE_POSTS = 'false'
+
+# How far in the future should it be scheduled?
+# timedelta formatting, defaults to = 'days=00, seconds=00, microseconds=00, milliseconds=00, minutes=00, hours=00, weeks=00' unless specified here
+# i.e., SCHEDULE_DELAY = 'weeks=1, days=4' sets up a scheduled post 1 week, 4 days into the future, or SCHEDULED_DELAY = 'days=365' equates to 1 year in the future
+SCHEDULED_DELAY='days=365'

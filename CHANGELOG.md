@@ -14,6 +14,7 @@ All notable changes to this project will be documented in this file.
 - Option to replace URL links with an alternative such as libreddit or teddit for privacy
 - Added example systemd service for management of the bot through systemctl
 - Added CHANGELOG file
+- Added option to send posts to Mastodon API schedule queue instead of posting, configurable with a delay option
 
 ### Fixed
 
