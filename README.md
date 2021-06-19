@@ -16,8 +16,8 @@ Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with man
 
 ### Todo
 
--[ ] Support for pulling from multiple subreddits
--[ ] Support for text posts
+- [ ] Support for pulling from multiple subreddits
+- [ ] Support for text posts
 
 ## Installation
 
