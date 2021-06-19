@@ -26,7 +26,7 @@ Requirements:
  - Python 3.6.5+
  - A fediverse account that the bot will post to
  - `CLIENT_ID`, `CLIENT_SECRET`, and `ACCESS_TOKEN` to authorize posting to your fedi account   
-   - Generate one here https://tinysubversions.com/notes/mastodon-bot/
+   - Generate these here https://tinysubversions.com/notes/mastodon-bot/
 
 ```
 git clone https://github.com/erisdisqordia/le-reddit-bot
