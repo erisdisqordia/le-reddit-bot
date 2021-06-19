@@ -14,6 +14,11 @@ Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with man
 - Option to include or disable the source URL
 - Option to replace URL links with an alternative such as libreddit or teddit for privacy
 
+### Todo
+
+-[ ] Support for pulling from multiple subreddits
+-[ ] Support for text posts
+
 ## Installation
 
 Requirements:
