@@ -41,6 +41,9 @@ MARK_NSFW = 'true'
 
 # Do you want to include the link to the original post on reddit? true / false 
 LINK_ENABLED = 'true'
+# What text should go before the source URL if LINK_ENABLED? For example, Source: [link]
+# Use \n for line breaks
+LINK_PREFIX = '\n\nSource: '
 
 # Do you want to replace reddit source links with an alternate URL?
 # Otherwise, will default to redd.it

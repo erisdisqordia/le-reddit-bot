@@ -210,6 +210,7 @@ def poll_toot(mastodon, conn, retry_count=0):
     cw_text = gen_cw_text(child_data)
     reddit_title = child_data["title"]
     toot_visibility = config.VISIBILITY
+    prefix_text = config.LINK_PREFIX
 
     if config.TITLES_ENABLED == "true":
         toot_text = reddit_title
@@ -231,13 +232,13 @@ def poll_toot(mastodon, conn, retry_count=0):
            alternate_url = config.ALT_URL
            url_type = config.ALT_URL_TYPE
            if url_type == "full":
-               source_url = " https://" + alternate_url + "/r/" + subreddit_name + "/" + child_id
+               source_url = prefix_text + "https://" + alternate_url + "/r/" + subreddit_name + "/" + child_id
            elif url_type == "short":
-               source_url = " https://" + alternate_url + "/" + child_id
+               source_url = prefix_text + "https://" + alternate_url + "/" + child_id
            else:
-               source_url = " https://redd.it" + "/" + child_id
+               source_url = prefix_text + "https://redd.it" + "/" + child_id
        else:
-           source_url = " https://redd.it" + "/" + child_id
+           source_url = prefix_text + "https://redd.it" + "/" + child_id
     else:
            source_url = ""
 
