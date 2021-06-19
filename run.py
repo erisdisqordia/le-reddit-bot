@@ -6,6 +6,7 @@ import sqlite3
 import math
 
 from humanfriendly import format_timespan
+from xml.sax import saxutils as su
 
 import requests
 from mastodon import Mastodon, MastodonAPIError
@@ -213,7 +214,7 @@ def poll_toot(mastodon, conn, retry_count=0):
     text_prefix = config.TEXT_PREFIX
 
     if config.TITLES_ENABLED == "true":
-        toot_text = reddit_title
+        toot_text = su.unescape(reddit_title, {'&quot;':'"'})
     else:
         toot_text = ""
 
