@@ -14,10 +14,19 @@ Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with man
 - Option to include or disable the source URL
 - Option to replace URL links with an alternative such as libreddit or teddit for privacy
 
+### Todo
+
+- [ ] Support for pulling from multiple subreddits
+- [ ] Support for text posts
+- [ ] Support for calling Mastodon.py to generate our own access token 
+
 ## Installation
 
 Requirements:
  - Python 3.6.5+
+ - A fediverse account that the bot will post to
+ - `CLIENT_ID`, `CLIENT_SECRET`, and `ACCESS_TOKEN` to authorize posting to your fedi account   
+   - Generate these here https://tinysubversions.com/notes/mastodon-bot/
 
 ```
 git clone https://github.com/erisdisqordia/le-reddit-bot

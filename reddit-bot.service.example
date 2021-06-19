@@ -11,9 +11,9 @@ Restart=on-failure
 User=eris
 
 ; Make sure that all paths fit your installation.
-; Path to the home directory of the user running the Pleroma service
+; Path to the home directory of the user running the bot
 Environment="HOME=/home/eris/"
-; Path to the folder containing the Pleroma installation.
+; Folder of bot repo (where run.py resides)
 WorkingDirectory=/location/to/botfolder/
 
 [Install]
