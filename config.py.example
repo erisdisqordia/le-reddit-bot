@@ -74,6 +74,6 @@ ALT_URL_TYPE = 'short'
 SCHEDULE_POSTS = 'false'
 
 # How far in the future should it be scheduled?
-# timedelta formatting, defaults to = 'days=00, seconds=00, microseconds=00, milliseconds=00, minutes=00, hours=00, weeks=00' unless specified here
-# i.e., SCHEDULE_DELAY = 'weeks=1, days=4' sets up a scheduled post 1 week, 4 days into the future, or SCHEDULED_DELAY = 'days=365' equates to 1 year in the future
-SCHEDULED_DELAY='days=365'
+# pandas timedelta formatting, i.e., SCHEDULE_DELAY = '365 days', '20 days 15 minutes', etc
+# https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.Timedelta.html
+SCHEDULE_DELAY = '365 days'

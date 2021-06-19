@@ -35,7 +35,7 @@ git clone https://github.com/erisdisqordia/le-reddit-bot
 cd le-reddit-bot
 
 # install dependencies
-pip3 install wheel Mastodon.py humanfriendly
+pip3 install wheel Mastodon.py humanfriendly pandas
 
 cp config.py.example config.py
 

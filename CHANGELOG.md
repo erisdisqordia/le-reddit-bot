@@ -25,6 +25,7 @@ All notable changes to this project will be documented in this file.
 - Changed original bot behavior to reject all 18+ posts from Reddit
 - Posts no longer automatically mark all images as NSFW on fedi
    - this was changed to an option to either match if the Reddit post is marked NSFW, to always force NSFW, or to never mark NSFW 
+- Added pandas to requirements to fix timedelta issues with configurable units for scheduled posts
 
 ## [Upstream]
 

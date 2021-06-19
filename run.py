@@ -4,6 +4,7 @@ import time
 import mimetypes
 import sqlite3
 import math
+import pandas as pd
 
 from humanfriendly import format_timespan
 from xml.sax import saxutils as su
@@ -248,7 +249,7 @@ def poll_toot(mastodon, conn, retry_count=0):
 
     if config.SCHEDULE_POSTS == "true":
         delay = config.SCHEDULE_DELAY
-        scheduled_time = datetime.now() + timedelta(delay)
+        scheduled_time = datetime.now() + pd.Timedelta(delay)
     else:
         scheduled_time = None
 
