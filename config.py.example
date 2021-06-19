@@ -32,12 +32,17 @@ CONTENT_WARNINGS = {
 VISIBILITY = "unlisted"
 
 # Post title of the Reddit post with the Mastodon status? 
-# Options: true (always post full title with credit), no_credit (shot title without "by ___"), false
 TITLES_ENABLED = 'true'
 
 # Do you want images marked NSFW on Reddit to also be marked sensitive on fedi?
 # Options: true (match reddit nsfw tag), always (always mark nsfw on fedi), or false (never mark nsfw)
 MARK_NSFW = 'true'
+
+# Do you want to credit the person who posted it originally?
+AUTHOR_CREDIT = 'true'
+# What text should go before the author name if AUTHOR_CREDIT is true? ie, Posted by: [author]
+# Use \n for line breaks
+AUTHOR_PREFIX = '\nby: '
 
 # Do you want to include the link to the original post on reddit? true / false 
 LINK_ENABLED = 'true'

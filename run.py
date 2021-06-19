@@ -178,6 +178,7 @@ def poll_toot(mastodon, conn, retry_count=0):
 
     child_data = child["data"]
     child_id = child_data["id"]
+    child_author = child_data["author"]
 
     log.info(f"id to post: {child_id}, last ids: {last_posts}")
 
@@ -214,9 +215,6 @@ def poll_toot(mastodon, conn, retry_count=0):
 
     if config.TITLES_ENABLED == "true":
         toot_text = reddit_title
-    elif config.TITLES_ENABLED == "no_credit":
-        toot_text = reddit_title.split("by ",1)
-        toot_text = "".join(toot_text)
     else:
         toot_text = ""
 
@@ -226,6 +224,11 @@ def poll_toot(mastodon, conn, retry_count=0):
         toot_sensitivity = True
     else:
         toot_sensitivity = False
+
+    if config.AUTHOR_CREDIT == "true":
+        author_name = config.AUTHOR_PREFIX + child_author + " "
+    else:
+        author_name = ""
 
     if config.LINK_ENABLED == "true":
        if config.ALT_URL_ENABLED == "true":
@@ -243,7 +246,7 @@ def poll_toot(mastodon, conn, retry_count=0):
            source_url = ""
 
     toot = mastodon.status_post(
-        status=toot_text + source_url,
+        status=toot_text + author_name + source_url,
         media_ids=[media["id"]],
         spoiler_text=cw_text,
         sensitive=toot_sensitivity,
