@@ -249,7 +249,6 @@ def poll_toot(mastodon, conn, retry_count=0):
     if config.SCHEDULE_POSTS == "true":
         delay = config.SCHEDULE_DELAY
         scheduled_time = datetime.now() + timedelta(delay)
-        scheduled_time = scheduled_time
     else:
         scheduled_time = None
 
