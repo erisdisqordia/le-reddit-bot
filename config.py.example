@@ -38,6 +38,12 @@ TITLES_ENABLED = 'true'
 # Do you want text inserted at the start of the fedi post?
 TEXT_PREFIX = "Crossposted from le Reddit: "
 
+# Post the "selftext" aka the actual post text? (like with r/copypasta)
+TEXT_POSTS = 'true'
+
+# Prefix text before the post text
+CONTENT_PREFIX = ""
+
 # Do you want images marked NSFW on Reddit to also be marked sensitive on fedi?
 # Options: true (match reddit nsfw tag), always (always mark nsfw on fedi), or false (never mark nsfw)
 MARK_NSFW = 'true'
