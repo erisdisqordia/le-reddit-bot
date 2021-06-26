@@ -35,7 +35,7 @@ git clone https://github.com/erisdisqordia/le-reddit-bot
 cd le-reddit-bot
 
 # install dependencies
-pip3 install -r requiements.txt
+pip3 install -r requirements.txt
 
 cp config.py.example config.py
 
