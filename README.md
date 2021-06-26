@@ -15,11 +15,12 @@ Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with man
 - Option to replace URL links with an alternative such as libreddit or teddit for privacy
 - Option to schedule the post via Mastodon API's post scheduler queue instead of posting immediately
   - Can be tweaked to hand-curate your own scheduled posts with posts you choose, especially good for fast subreddits
+- Support for text-only posts without images
 
 ### Todo
 
 - [ ] Support for pulling from multiple subreddits
-- [ ] Support for text posts
+- [x] Support for text posts
 - [ ] Support for calling Mastodon.py to generate our own access token 
 
 ## Installation

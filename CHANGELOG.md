@@ -15,6 +15,7 @@ All notable changes to this project will be documented in this file.
 - Added example systemd service for management of the bot through systemctl
 - Added CHANGELOG file
 - Added option to send posts to Mastodon API schedule queue instead of posting, configurable with a delay option
+- Option to include the actual post text (not title) into the Mastodon status (ie for r/copypasta, etc)
 
 ### Fixed
 

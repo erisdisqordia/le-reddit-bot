@@ -5,30 +5,25 @@ import mimetypes
 import sqlite3
 import math
 import pandas as pd
+import requests
+import config
 
 from humanfriendly import format_timespan
 from xml.sax import saxutils as su
 from datetime import datetime, timedelta
-
-import requests
 from mastodon import Mastodon, MastodonAPIError
-
-import config
 
 logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger(__name__)
 
-
 TSTAMP_CUR = 0
 TSTAMP_NEXT = 1
-
 
 def _update_timestamp(cur, ttype, tstamp):
     cur.execute("delete from timestamps where ttype=?", (ttype,))
     cur.execute(
         "insert into timestamps (ttype, timestamp) values (?, ?)", (ttype, tstamp)
     )
-
 
 def _do_res(conn):
     cur = conn.cursor()
@@ -42,12 +37,10 @@ def _do_res(conn):
     # another type of loss i like: | || || |_
     conn.commit()
 
-
 def _fetch_tstamp(conn, ttype) -> int:
     cur = conn.cursor()
     cur.execute("select timestamp from timestamps where ttype=?", (ttype,))
     return cur.fetchone()
-
 
 def fetch_next_timestamp(conn) -> int:
     """Fetch the next timestamp to check for posts."""
@@ -56,14 +49,12 @@ def fetch_next_timestamp(conn) -> int:
     except TypeError:
         return None
 
-
 def fetch_cur_tstamp(conn) -> int:
     """Fetch the current timestamp, if any."""
     try:
         return _fetch_tstamp(conn, TSTAMP_CUR)[0]
     except TypeError:
         return None
-
 
 def fetch_last_posts(conn) -> list:
     """Fetch tooted posts from db"""
@@ -72,13 +63,12 @@ def fetch_last_posts(conn) -> list:
     last_posts = cur.fetchall()
     return [e[0] for e in last_posts]
 
-
 def is_image(child) -> bool:
     """Check if a post object has an image attached."""
     child_data = child["data"]
     child_url = child_data["url"]
+    child_is_self = child_data["is_self"]
     return child_url.endswith((".jpg", ".jpeg", ".png", ".gif"))
-
 
 def not_posted(child, conn) -> bool:
     """Check if a post has been already tooted."""
@@ -89,12 +79,10 @@ def not_posted(child, conn) -> bool:
 
     return child_id not in last_posts
 
-
 def is_nsfw(child) -> bool:
     """return if a post is set to over 18 (NSFW)."""
     data = child["data"]
     return data.get("over_18", False)
-
 
 def gen_cw_text(child_data: dict) -> bool:
     """Generate a content warning text for the post
@@ -116,10 +104,8 @@ def gen_cw_text(child_data: dict) -> bool:
     # by default, if no matches happen, no CW applies.
     # can be set to a default CW by using an empty keyword
 
-
 def poll_toot(mastodon, conn, retry_count=0):
     """Query reddit and toot if possible."""
-    # log.info("Checking for new posts...")
     subreddit_name = config.SUBREDDIT
     sort = config.SUBREDDIT_SORT
     subreddit_url = "https://www.reddit.com/r/" + subreddit_name + "/" + sort + ".json"
@@ -167,7 +153,7 @@ def poll_toot(mastodon, conn, retry_count=0):
     useful_children = (
         child
         for child in data["children"]
-        if is_image(child) and not_posted(child, conn)
+        if not_posted(child, conn)
     )
 
     try:
@@ -180,6 +166,9 @@ def poll_toot(mastodon, conn, retry_count=0):
     child_data = child["data"]
     child_id = child_data["id"]
     child_author = child_data["author"]
+    child_text = child_data["selftext"]
+    child_is_self = child_data["is_self"]
+    child_is_image = is_image(child)
 
     log.info(f"id to post: {child_id}, last ids: {last_posts}")
 
@@ -189,23 +178,27 @@ def poll_toot(mastodon, conn, retry_count=0):
         return
 
     child_url = child_data["url"]
-    image = requests.get(child_url)
 
-    # upload image since we can't pass the URL
-    mimetype, _encoding = mimetypes.guess_type(child_url)
-    log.info(f"sending image (mimetype: %r)...", mimetype)
-    try:
-        media = mastodon.media_post(image.content, mimetype)
-    except MastodonAPIError:
-        log.exception("error while sending image, ignoring")
+    if child_is_image:
+        image = requests.get(child_url)
 
-        # since media failed to upload, its best we ignore
-        # the post altogether by inserting it into db
-        conn.execute("insert into posts (postid) values (?)", (child_id,))
-        conn.commit()
+        # upload image since we can't pass the URL
+        mimetype, _encoding = mimetypes.guess_type(child_url)
 
-        _do_res(conn)
-        return
+        log.info(f"/sending image (mimetype: %r)...", mimetype)
+
+        try:
+            media = mastodon.media_post(image.content, mimetype)
+        except MastodonAPIError:
+            log.exception("error while sending image, ignoring")
+
+            # since media failed to upload, its best we ignore
+            # the post altogether by inserting it into db
+            conn.execute("insert into posts (postid) values (?)", (child_id,))
+            conn.commit()
+
+            _do_res(conn)
+            return
 
     log.info("Posting on the Fediverse...")
 
@@ -232,6 +225,11 @@ def poll_toot(mastodon, conn, retry_count=0):
     else:
         author_name = ""
 
+    if config.TEXT_POSTS == "true":
+        content_text = config.CONTENT_PREFIX + child_text + " "
+    else:
+        content_text = ""
+
     if config.LINK_ENABLED == "true":
        if config.ALT_URL_ENABLED == "true":
            alternate_url = config.ALT_URL
@@ -253,14 +251,23 @@ def poll_toot(mastodon, conn, retry_count=0):
     else:
         scheduled_time = None
 
-    toot = mastodon.status_post(
-        status=text_prefix + toot_text + author_name + source_url,
-        media_ids=[media["id"]],
-        spoiler_text=cw_text,
-        sensitive=toot_sensitivity,
-        visibility=toot_visibility,
-        scheduled_at=scheduled_time
-    )
+    if child_is_image:
+        toot = mastodon.status_post(
+            status=text_prefix + toot_text + content_text + author_name + source_url,
+            media_ids=[media["id"]],
+            spoiler_text=cw_text,
+            sensitive=toot_sensitivity,
+            visibility=toot_visibility,
+            scheduled_at=scheduled_time
+        )
+    else:
+        toot = mastodon.status_post(
+            status=text_prefix + toot_text + content_text + author_name + source_url,
+            spoiler_text=cw_text,
+            sensitive=toot_sensitivity,
+            visibility=toot_visibility,
+            scheduled_at=scheduled_time
+        )
 
     log.info(f'Success!\n\nTitle: {toot_text}\nURL: {config.API_BASE_URL}/notice/{toot["id"]}\n')
 
