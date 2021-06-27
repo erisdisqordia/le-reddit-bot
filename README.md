@@ -26,7 +26,7 @@ Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with man
 ## Installation
 
 Requirements:
- - Python 3.6.5+
+ - python3 and python-pip3
  - A fediverse account that the bot will post to
  - `CLIENT_ID`, `CLIENT_SECRET`, and `ACCESS_TOKEN` to authorize posting to your fedi account   
    - Generate these here https://tinysubversions.com/notes/mastodon-bot/
@@ -36,7 +36,7 @@ git clone https://github.com/erisdisqordia/le-reddit-bot
 cd le-reddit-bot
 
 # install dependencies
-pip3 install wheel Mastodon.py humanfriendly pandas
+pip3 install -r requirements.txt
 
 cp config.py.example config.py
 
