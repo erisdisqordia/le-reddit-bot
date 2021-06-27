@@ -18,20 +18,18 @@ Note that you can use multiple subreddits with this bot by using `"Megaten+copyp
 - Option to schedule the post via Mastodon API's post scheduler queue instead of posting immediately
   - Can be tweaked to hand-curate your own scheduled posts with posts you choose, especially good for fast subreddits
 - Support for text-only posts without images
+- No need to generate your own client credentials
 
 ### Todo
 
 - [x] Support for text posts
-- [ ] Support for calling Mastodon.py to generate our own access token 
+- [x] Support for calling Mastodon.py to generate our own access token
 
 ## Installation
 
 Requirements:
  - python3 and python-pip3
  - A fediverse account that the bot will post to
- - `CLIENT_ID`, `CLIENT_SECRET`, and `ACCESS_TOKEN` to authorize posting to your fedi account   
-   - Generate these here https://tinysubversions.com/notes/mastodon-bot/
-
 ```
 git clone https://github.com/erisdisqordia/le-reddit-bot
 cd le-reddit-bot
@@ -42,9 +40,6 @@ pip3 install -r requirements.txt
 cp config.py.example config.py
 
 # edit config.py as you want
-# CLIENT_ID, CLIENT_SECRET and ACCESS_TOKEN
-# are acquired by creating an application tied to the bots' account
-# create one here: https://tinysubversions.com/notes/mastodon-bot/
 ```
 
 ## Running

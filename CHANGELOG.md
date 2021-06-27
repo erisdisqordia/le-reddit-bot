@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [Unreleased]
+
+### Changed
+- Changed login function to not require generating access token manually
+
 ## [1.0] - 2021-06-26
 
 ### Added

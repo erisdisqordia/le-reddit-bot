@@ -2,10 +2,9 @@
 API_BASE_URL = 'https://your_instance.space'
 
 # app credentials for your fedi account
-# you can generate these here: https://tinysubversions.com/notes/mastodon-bot/
-CLIENT_ID = 'your_client_id'
-CLIENT_SECRET = 'your_client_secret'
-ACCESS_TOKEN = 'your_access_token'
+# these are used to create an access token with Mastodon.py in a file named redditbot_clientcred.secret
+USERNAME = "your_bots_username"
+PASSWORD = "your_bots_password"
 
 # Which subreddit to check for posts?
 # Example, for posts from r/Megaten: SUBREDDIT = 'Megaten'

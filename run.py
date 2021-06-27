@@ -292,11 +292,23 @@ def poll_toot(mastodon, conn, retry_count=0):
 
 
 def main():
-    mastodon = Mastodon(
-        client_id=config.CLIENT_ID,
-        client_secret=config.CLIENT_SECRET,
-        access_token=config.ACCESS_TOKEN,
-        api_base_url=config.API_BASE_URL
+
+    Mastodon.create_app (
+        'le-reddit-bot',
+        scopes=['read', 'write'],
+        api_base_url = config.API_BASE_URL,
+        to_file = 'redditbot_clientcred.secret'
+    )
+
+    mastodon = Mastodon (
+        client_id = 'redditbot_clientcred.secret',
+        api_base_url = config.API_BASE_URL
+    )
+
+    mastodon.access_token = mastodon.log_in (
+        username = config.USERNAME,
+        password = config.PASSWORD,
+        scopes = ['read', 'write']
     )
 
     db = sqlite3.connect(config.BOT_STATE)
