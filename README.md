@@ -4,6 +4,8 @@ Bot that checks for new images on a subreddit (i.e. reddit.com/r/Megaten) and po
 
 Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with many new options and rewrites to make it customizable
 
+Note that you can use multiple subreddits with this bot by using `"Megaten+copypasta+dankmemes"` etc as the "subreddit" in `config.py`   
+
 ### Differences include:
 - Status visibility option (previously only posted publicly)
 - NSFW post marking configuration
@@ -19,7 +21,6 @@ Fork of [luna/eunvrbot](https://gitlab.com/luna/eunvrbot/-/tree/master) with man
 
 ### Todo
 
-- [ ] Support for pulling from multiple subreddits
 - [x] Support for text posts
 - [ ] Support for calling Mastodon.py to generate our own access token 
 
