@@ -8,7 +8,8 @@ CLIENT_SECRET = 'your_client_secret'
 ACCESS_TOKEN = 'your_access_token'
 
 # Which subreddit to check for posts?
-# Example, for images from r/Megaten: SUBREDDIT = 'Megaten'
+# Example, for posts from r/Megaten: SUBREDDIT = 'Megaten'
+# Or to pull from multiple subreddits: SUBREDDIT = 'Megaten+PERSoNA+animemes+copypasta'
 SUBREDDIT = 'Megaten' 
 
 # Which subreddit sort to check under? Accepts: new / top / hot / rising
