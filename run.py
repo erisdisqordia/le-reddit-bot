@@ -108,7 +108,7 @@ def poll_toot(mastodon, conn, retry_count=0):
     """Query reddit and toot if possible."""
     subreddit_name = config.SUBREDDIT
     sort = config.SUBREDDIT_SORT
-    subreddit_url = "https://www.reddit.com/r/" + subreddit_name + "/" + sort + ".json"
+    subreddit_url = f"https://www.reddit.com/r/{subreddit_name}/{sort}.json"
 
     try:
         resp = requests.get(
@@ -137,7 +137,7 @@ def poll_toot(mastodon, conn, retry_count=0):
         return
 
     try:
-        log.info("Checking for new posts in r/" + subreddit_name + "/" + sort + "/...")
+        log.info(f"Checking for new posts in r/{subreddit_name}/{sort}/...")
         data = resp.json()
         assert isinstance(data, dict)
     except Exception:
@@ -234,20 +234,17 @@ def poll_toot(mastodon, conn, retry_count=0):
     else:
         self_text = ""
 
-    if config.LINK_ENABLED == "true":
-       if config.ALT_URL_ENABLED == "true":
-           alternate_url = config.ALT_URL
-           url_type = config.ALT_URL_TYPE
-           if url_type == "full":
-               source_url = link_prefix + "https://" + alternate_url + "/r/" + subreddit_name + "/" + child_id
-           elif url_type == "short":
-               source_url = link_prefix + "https://" + alternate_url + "/" + child_id
-           else:
-               source_url = link_prefix + "https://redd.it" + "/" + child_id
-       else:
-           source_url = link_prefix + "https://redd.it" + "/" + child_id
+    if (config.LINK_ENABLED == "true") & (config.ALT_URL_ENABLED == "true"):
+        alternate_url = config.ALT_URL
+        url_type = config.ALT_URL_TYPE
+        if url_type == "full":
+            source_url = f"{link_prefix}http://{alternate_url}/r/{subreddit_name}/{child_id}"
+        elif url_type == "short":
+            source_url = f"{link_prefix}https://{alternate_url}/{child_id}"
+    elif config.LINK_ENABLED == "true":
+        source_url = f"{link_prefix}https://redd.it/{child_id}"
     else:
-           source_url = ""
+        source_url = ""
 
     if config.SCHEDULE_POSTS == "true":
         delay = config.SCHEDULE_DELAY
