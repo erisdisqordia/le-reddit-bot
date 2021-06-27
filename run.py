@@ -256,23 +256,20 @@ def poll_toot(mastodon, conn, retry_count=0):
         scheduled_time = None
 
     try:
+        media_ids = []
+
         if child_is_image:
-            toot = mastodon.status_post(
-                status=text_prefix + toot_text + content_text + author_name + source_url,
-                media_ids=[media["id"]],
-                spoiler_text=cw_text,
-                sensitive=toot_sensitivity,
-                visibility=toot_visibility,
-                scheduled_at=scheduled_time
-            )
-        else:
-            toot = mastodon.status_post(
-                status=text_prefix + toot_text + content_text + author_name + source_url,
-                spoiler_text=cw_text,
-                sensitive=toot_sensitivity,
-                visibility=toot_visibility,
-                scheduled_at=scheduled_time
-            )
+            media_ids = [media["id"]]
+
+        toot = mastodon.status_post(
+            status=text_prefix + toot_text + content_text + author_name + source_url,
+            media_ids=media_ids,
+            spoiler_text=cw_text,
+            sensitive=toot_sensitivity,
+            visibility=toot_visibility,
+            scheduled_at=scheduled_time
+        )
+
         log.info(f'Success!\n\nTitle: {toot_text}\nURL: {config.API_BASE_URL}/notice/{toot["id"]}\n')
         conn.execute("insert into posts (postid) values (?)", (child_id,))
         conn.commit()
@@ -287,9 +284,6 @@ def poll_toot(mastodon, conn, retry_count=0):
 
         _do_res(conn)
         return
-
-
-
 
 def main():
 
