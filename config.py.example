@@ -1,72 +1,64 @@
-# base url of the fedi instance
-API_BASE_URL = 'https://your_instance.space'
+# Fedi Credentials
 
-# app credentials for your fedi account
-# these are used to create an access token with Mastodon.py in a file named redditbot_clientcred.secret
+# Instance domain URL, username, and password of your fedi bot
+# Username and password create a secret access token stored in redditbot_clientcred.secret
+URL = 'https://your_instance.space'
 USERNAME = "your_bots_username"
 PASSWORD = "your_bots_password"
+
+# Name of database file for noting which posts we've posted already, will create if it doesnt exist
+FILE = 'posted_statuses.db'
+
+# Reddit Preferences
 
 # Which subreddit to check for posts?
 # Example, for posts from r/Megaten: SUBREDDIT = 'Megaten'
 # Or to pull from multiple subreddits: SUBREDDIT = 'Megaten+PERSoNA+animemes+copypasta'
-SUBREDDIT = 'Megaten' 
-
-# Which subreddit sort to check under? Accepts: new / top / hot / rising
+SUBREDDIT = 'Megaten'
+# Which subreddit sort to check under? Accepts: new / top / hot / rising / controversial / gilded
 SUBREDDIT_SORT = 'new'
+# How many minutes to wait until checking Reddit for new posts and checking for new posts? Default 10 minutes
+TOOT_PERIOD = 10
+# Copy flairs (meme, spoiler, meta, etc) from the Reddit post and use as CWs?
+# Example: FLAIRS = [ "meme", "spoiler" ]
+FLAIRS = []
+# Set content warnings based on a match in the Reddit post title
+# Example: CONTENT_WARNINGS = { 'CW: eris mention': ['eris', 'boderis'] }
+CONTENT_WARNINGS = {}
+# Overrides FLAIR and CONTENT_WARNINGS, sets Reddit's title as fedi's CW
+TITLE_AS_CW = 'true'
 
-# How many seconds to wait until checking Reddit for new posts, default 10 minutes (600 seconds)
-TOOT_PERIOD = 600
+# Fedi Status Preferences
 
-# Name of database file, will create if it doesnt exist
-# Recently posted reddit post IDs will be in that file
-BOT_STATE = 'posts.db'
-
-# Accept some flairs as content warnings
-ACCEPTED_FLAIRS = [ "example1", "example2"]
-
-# Set content warnings based on the reddit's post title.
-CONTENT_WARNINGS = {
-    'CW: eris mention': ['eris', 'boderis', 'bananananaboberis'],
-}
-# Overrides CONTENT_WARNINGS, sets Reddit's title as fedi's CW
-TITLE_AS_CW = 'false'
+# Format of post used by script with everything enabled:
+# CONTENT_PREFIX + TITLE_PREFIX + Reddit title + TEXT_PREFIX + Post text + AUTHOR_PREFIX + author name + LINK_PREFIX + link
 
 # Mastodon's API accepts: public, unlisted, private, direct
 VISIBILITY = "unlisted"
-
-# Post title of the Reddit post with the Mastodon status? 
-TITLES_ENABLED = 'true'
-
-# Do you want text inserted at the start of the fedi post?
-TEXT_PREFIX = "Crossposted from le Reddit: "
-
-# Post the "selftext" aka the actual post text? (like with r/copypasta)
-TEXT_POSTS = 'true'
-
-# Prefix text before the post text
-CONTENT_PREFIX = ""
 
 # Do you want images marked NSFW on Reddit to also be marked sensitive on fedi?
 # Options: true (match reddit nsfw tag), always (always mark nsfw on fedi), or false (never mark nsfw)
 MARK_NSFW = 'true'
 
-# Do you want to credit the person who posted it originally?
-AUTHOR_CREDIT = 'true'
-# What text should go before the author name if AUTHOR_CREDIT is true? ie, Posted by: [author]
-# Use \n for line breaks
-AUTHOR_PREFIX = '\nby: '
-
-# Do you want to include the link to the original post on reddit? true / false 
+# Post title of the Reddit post with the Mastodon status?
+TITLES_ENABLED = 'false'
+POST_TEXT_ENABLED = 'true'
+AUTHOR_ENABLED = 'false'
 LINK_ENABLED = 'true'
-# What text should go before the source URL if LINK_ENABLED? For example, Source: [link]
-# Use \n for line breaks
-LINK_PREFIX = '\n\nSource: '
 
-# Do you want to replace reddit source links with an alternate URL?
-# Otherwise, will default to redd.it
+# "PREFIX" options let you insert text before each section
+# Use \n for inserting new lines
+CONTENT_PREFIX = ""
+TITLE_PREFIX = ""
+TEXT_PREFIX = ""
+AUTHOR_PREFIX = ""
+LINK_PREFIX = "\n\nSource: "
+
+# Alternative URLs
+
+# Do you want to replace redd.it links with an alternative URL?
 # If you want increased privacy, some examples: teddit.net, libredd.it
 # You can also refer to the classic reddit interface: old.reddit.com
-# Requires LINK_ENABLED = 'true'
 ALT_URL_ENABLED = 'false'
 ALT_URL = 'libredd.it'
 
@@ -74,6 +66,8 @@ ALT_URL = 'libredd.it'
 # full = https://alt_domain/r/Subreddit/postID (teddit.net requires this)
 # short = https://alt_domain/postID (works with libredd.it, redd.it, etc)
 ALT_URL_TYPE = 'short'
+
+# Post Scheduling
 
 # Should we schedule the post instead of immediately post?
 # You can view your scheduled post queue in Mastodon, masto-fe, or clients like Tusky/Husky, and then review, change, post, etc.
