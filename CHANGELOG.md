@@ -16,7 +16,7 @@ All notable changes to this project will be documented in this file.
 - Added CHANGELOG file
 - Added option to send posts to Mastodon API schedule queue instead of posting, configurable with a delay option
 - Option to include the actual post text (not title) into the Mastodon status (ie for r/copypasta, etc)
-- "CW_AS_TITLE" option to set the fedi CW to be the reddit post title
+- "TITLE_AS_CW" option to set the fedi CW to be the reddit post title
 
 ### Fixed
 
