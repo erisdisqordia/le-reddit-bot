@@ -29,7 +29,7 @@ CONTENT_WARNINGS = {
     'CW: eris mention': ['eris', 'boderis', 'bananananaboberis'],
 }
 # Overrides CONTENT_WARNINGS, sets Reddit's title as fedi's CW
-CW_AS_TITLE = 'false'
+TITLE_AS_CW = 'false'
 
 # Mastodon's API accepts: public, unlisted, private, direct
 VISIBILITY = "unlisted"
