@@ -6,6 +6,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 - Changed login function to not require generating access token manually
+- Redid config names to be more legible -- please check your config.py with the updated config.py.example if upgrading
 
 ## [1.0] - 2021-06-26
 
