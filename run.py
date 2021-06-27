@@ -202,11 +202,15 @@ def poll_toot(mastodon, conn, retry_count=0):
 
     log.info("Posting on the Fediverse...")
 
-    cw_text = gen_cw_text(child_data)
     reddit_title = child_data["title"]
     toot_visibility = config.VISIBILITY
     link_prefix = config.LINK_PREFIX
     text_prefix = config.TEXT_PREFIX
+
+    if config.TITLE_AS_CW == "true":
+        cw_text = reddit_title
+    else:
+        cw_text = gen_cw_text(child_data)
 
     if config.TITLES_ENABLED == "true":
         toot_text = su.unescape(reddit_title, {'&quot;':'"'})
