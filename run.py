@@ -31,7 +31,7 @@ def _do_res(conn):
 
     # update timestamps for current and next
     _update_timestamp(cur, TSTAMP_CUR, cur_t)
-    _update_timestamp(cur, TSTAMP_NEXT, cur_t + config.TOOT_PERIOD)
+    _update_timestamp(cur, TSTAMP_NEXT, cur_t + (config.TOOT_PERIOD * 60))
 
     # i really dont like data loss you see
     # another type of loss i like: | || || |_
@@ -89,7 +89,7 @@ def gen_cw_text(child_data: dict) -> bool:
     based on the flair or title of the post."""
     flair = child_data.get("link_flair_text")
 
-    if flair in config.ACCEPTED_FLAIRS:
+    if flair in config.FLAIRS:
         return flair
 
     # match configurable content warnings
@@ -205,17 +205,17 @@ def poll_toot(mastodon, conn, retry_count=0):
     reddit_title = child_data["title"]
     toot_visibility = config.VISIBILITY
     link_prefix = config.LINK_PREFIX
-    text_prefix = config.TEXT_PREFIX
+    content_prefix = config.CONTENT_PREFIX
 
     if config.TITLE_AS_CW == "true":
-        cw_text = reddit_title
+        cw_text = su.unescape(reddit_title, {'&quot;':'"'})
     else:
         cw_text = gen_cw_text(child_data)
 
     if config.TITLES_ENABLED == "true":
-        toot_text = su.unescape(reddit_title, {'&quot;':'"'})
+        title_text = config.TITLE_PREFIX + su.unescape(reddit_title, {'&quot;':'"'})
     else:
-        toot_text = ""
+        title_text = ""
 
     if config.MARK_NSFW == "true":
         toot_sensitivity = is_nsfw(child)
@@ -224,15 +224,15 @@ def poll_toot(mastodon, conn, retry_count=0):
     else:
         toot_sensitivity = False
 
-    if config.AUTHOR_CREDIT == "true":
+    if config.AUTHOR_ENABLED == "true":
         author_name = config.AUTHOR_PREFIX + child_author + " "
     else:
         author_name = ""
 
-    if config.TEXT_POSTS == "true":
-        content_text = config.CONTENT_PREFIX + child_text + " "
+    if config.POST_TEXT_ENABLED == "true":
+        self_text = config.TEXT_PREFIX + su.unescape(child_text, {'&quot;':'"'}) + " "
     else:
-        content_text = ""
+        self_text = ""
 
     if config.LINK_ENABLED == "true":
        if config.ALT_URL_ENABLED == "true":
@@ -262,7 +262,7 @@ def poll_toot(mastodon, conn, retry_count=0):
             media_ids = [media["id"]]
 
         toot = mastodon.status_post(
-            status=text_prefix + toot_text + content_text + author_name + source_url,
+            status=content_prefix + title_text + self_text + author_name + source_url,
             media_ids=media_ids,
             spoiler_text=cw_text,
             sensitive=toot_sensitivity,
@@ -270,7 +270,7 @@ def poll_toot(mastodon, conn, retry_count=0):
             scheduled_at=scheduled_time
         )
 
-        log.info(f'Success!\n\nTitle: {toot_text}\nURL: {config.API_BASE_URL}/notice/{toot["id"]}\n')
+        log.info(f'Success!\n\nTitle: {reddit_title}\nURL: {config.URL}/notice/{toot["id"]}\n')
         conn.execute("insert into posts (postid) values (?)", (child_id,))
         conn.commit()
         _do_res(conn)
@@ -290,13 +290,13 @@ def main():
     Mastodon.create_app (
         'le-reddit-bot',
         scopes=['read', 'write'],
-        api_base_url = config.API_BASE_URL,
+        api_base_url = config.URL,
         to_file = 'redditbot_clientcred.secret'
     )
 
     mastodon = Mastodon (
         client_id = 'redditbot_clientcred.secret',
-        api_base_url = config.API_BASE_URL
+        api_base_url = config.URL
     )
 
     mastodon.access_token = mastodon.log_in (
@@ -305,7 +305,7 @@ def main():
         scopes = ['read', 'write']
     )
 
-    db = sqlite3.connect(config.BOT_STATE)
+    db = sqlite3.connect(config.FILE)
     db.executescript(
         """
     create table if not exists posts (
